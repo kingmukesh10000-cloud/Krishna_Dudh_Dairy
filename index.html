@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Krishna Dudh Dairy — Farm to Doorstep, Kathmandu Valley</title>
+<meta name="theme-color" content="#1B3B2F">
+<meta name="description" content="Fresh cow & buffalo milk, ghee, curd and paneer delivered every morning across Kathmandu Valley.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style id="leaflet-css">
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	zoom: 1;
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+</style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="top">
+  <div class="wrap header-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34"><path d="M14 4h12l2 8c2 3 3 6 3 10 0 8-5.5 14-11 14S9 30 9 22c0-4 1-7 3-10l2-8Z" fill="var(--marigold)"/><path d="M14 4h12l1.4 5.6H12.6L14 4Z" fill="var(--charcoal)"/></svg>
+      </span>
+      <span class="brand-text">Krishna<br><small>Dudh Dairy</small></span>
+    </a>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="#route">Our Mornings</a>
+      <a href="#products">Products</a>
+      <a href="#prices">Prices</a>
+      <a href="#order">Order</a>
+      <a href="#orderHistory">My Orders</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn-whatsapp header-cta" href="https://wa.me/9779815750117" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5l.4-.4c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 2 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+      WhatsApp Us
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- mobile menu -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#route">Our Mornings</a>
+  <a href="#products">Products</a>
+  <a href="#prices">Prices</a>
+  <a href="#order">Order</a>
+  <a href="#orderHistory">My Orders</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contact">Contact</a>
+  <a class="btn btn-whatsapp" href="https://wa.me/9779815750117" target="_blank" rel="noopener">WhatsApp Us</a>
+</div>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">Kathmandu · since 2018</p>
+      <h1>Milked at 4&nbsp;AM.<br>On your table by 7.</h1>
+      <p class="hero-sub">Cow and buffalo milk, ghee, curd, paneer and sweets — collected from farms in the Kathmandu Valley each morning and delivered before your tea gets cold.</p>
+      <div class="hero-actions">
+        <a href="#order" class="btn btn-primary">Start an order</a>
+        <a href="#route" class="btn btn-ghost">See how it moves →</a>
+      </div>
+      <dl class="hero-stats">
+        <div><dt data-count="5000">0</dt><dd>families served</dd></div>
+        <div><dt data-count="10">0</dt><dd>years running</dd></div>
+        <div><dt data-count="20">0</dt><dd>products</dd></div>
+      </dl>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="milk-jug">
+        <svg viewBox="0 0 220 260" width="100%" height="100%">
+          <ellipse cx="110" cy="245" rx="70" ry="10" fill="rgba(0,0,0,0.15)"/>
+          <path d="M55 60 L45 230 Q45 250 70 250 L150 250 Q175 250 175 230 L165 60 Z" fill="var(--milk)" stroke="var(--charcoal)" stroke-width="3"/>
+          <rect class="pour-mask" x="45" y="150" width="130" height="100" fill="var(--sky)"/>
+          <path d="M55 60 L45 230 Q45 250 70 250 L150 250 Q175 250 175 230 L165 60 Z" fill="none" stroke="var(--charcoal)" stroke-width="3"/>
+          <path d="M75 60 Q110 40 145 60 L155 30 Q110 5 65 30 Z" fill="var(--marigold)" stroke="var(--charcoal)" stroke-width="3"/>
+          <circle cx="150" cy="90" r="4" fill="var(--charcoal)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <svg class="hero-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C360,90 1080,0 1440,50 L1440,90 L0,90 Z" fill="var(--milk)"/></svg>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="about" id="about">
+  <div class="wrap about-inner">
+    <div class="about-media" aria-hidden="true">
+      <img src="krishna.png" alt="" loading="lazy">
+    </div>
+    <div class="about-copy">
+      <p class="eyebrow">Why Krishna Dudh Dairy</p>
+      <h2>We didn't build a brand. We kept a route.</h2>
+      <p>Krishna started with two cans of milk on a bicycle in Kathmandu. The route is longer now — covering wards across the valley — but the promise hasn't moved: nothing leaves the collection point until it's tested, and nothing sits in a warehouse overnight.</p>
+      <ul class="about-points">
+        <li><strong>No added water, no preservatives</strong> — what leaves the cow is what reaches your door.</li>
+        <li><strong>Cold chain the whole way</strong> — collection, transport and last-mile delivery stay under 4°C.</li>
+        <li><strong>Same-day complaints, same-day fixes</strong> — message us on WhatsApp and a person replies, not a bot.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SIGNATURE: THE MORNING ROUTE ================= -->
+<section class="route" id="route">
+  <div class="wrap">
+    <p class="eyebrow eyebrow-light">Every single morning</p>
+    <h2 class="route-title">The route your milk actually takes</h2>
+    <p class="route-sub">Four checkpoints, three hours, one cold chain. This is what happens before your bell rings.</p>
+  </div>
+  <div class="route-track-wrap">
+    <div class="route-track wrap">
+      <div class="route-line" aria-hidden="true">
+        <div class="route-line-fill" id="routeLineFill"></div>
+        <div class="route-dot" id="routeDot">🥛</div>
+      </div>
+      <ol class="route-steps">
+        <li class="route-step" data-time="4:00 AM">
+          <span class="route-step-icon">🐄</span>
+          <h3>Collection</h3>
+          <p>Milk drawn from partner farms across farms in the Kathmandu Valley, tested for fat and purity on the spot.</p>
+        </li>
+        <li class="route-step" data-time="4:45 AM">
+          <span class="route-step-icon">❄️</span>
+          <h3>Chilling</h3>
+          <p>Cooled to below 4°C within the hour at our Kathmandu collection point — no delay, no room-temperature wait.</p>
+        </li>
+        <li class="route-step" data-time="5:30 AM">
+          <span class="route-step-icon">📦</span>
+          <h3>Packing</h3>
+          <p>Sealed into hygienic pouches and crates for milk; ghee, paneer and curd are batched from the previous day's stock.</p>
+        </li>
+        <li class="route-step" data-time="6:00 – 8:00 AM">
+          <span class="route-step-icon">🛵</span>
+          <h3>Delivery</h3>
+          <p>Riders cover Kathmandu, Bhaktapur &amp; Lalitpur on fixed rounds — you can track your rider's rough slot.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRODUCTS ================= -->
+<section class="products" id="products">
+  <div class="wrap">
+    <p class="eyebrow">What we carry</p>
+    <h2>Twenty-odd things, all made the same honest way</h2>
+
+    <div class="filter-row" role="tablist" aria-label="Filter products">
+      <button class="filter-chip is-active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="milk">🥛 Milk</button>
+      <button class="filter-chip" data-filter="ghee">🧈 Ghee</button>
+      <button class="filter-chip" data-filter="curd">🫙 Curd</button>
+      <button class="filter-chip" data-filter="paneer">🧀 Paneer</button>
+      <button class="filter-chip" data-filter="sweets">🍮 Sweets</button>
+    </div>
+
+    <div class="product-grid" id="productGrid"><!-- injected by script.js --></div>
+  </div>
+</section>
+
+<!-- ================= PRICE LIST ================= -->
+<section class="prices" id="prices">
+  <div class="wrap">
+    <p class="eyebrow">Straight numbers</p>
+    <h2>Price list, no fine print</h2>
+    <p class="section-sub">Prices in NPR. Same rate whether you order once or subscribe monthly.</p>
+    <div class="price-table-wrap">
+      <table class="price-table">
+        <thead><tr><th>Product</th><th>Unit</th><th>Price</th><th></th></tr></thead>
+        <tbody id="priceTableBody"><!-- injected by script.js --></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ORDER BUILDER ================= -->
+<section class="order" id="order">
+  <div class="wrap order-inner">
+    <div class="order-copy">
+      <p class="eyebrow eyebrow-light">Place an order</p>
+      <h2>Build your basket, order right here</h2>
+      <p>Pick your products below, fill in your details, and place your order directly on the site — we receive it instantly and confirm within the hour.</p>
+      <div class="order-info-cards">
+        <div><strong>Free delivery</strong><span>on every order, no minimum</span></div>
+        <div><strong>Order by 8 PM</strong><span>for next-morning delivery</span></div>
+        <div><strong>Pay on delivery</strong><span>or via eSewa / Khalti</span></div>
+      </div>
+    </div>
+
+    <div class="order-panel">
+      <div class="order-panel-head">
+        <h3>Your basket</h3>
+        <span id="cartCount">0 items</span>
+      </div>
+
+      <div class="quick-add">
+        <select id="quickAddSelect" aria-label="Choose a product"></select>
+        <input type="number" id="quickAddQty" min="1" value="1" aria-label="Quantity">
+        <button class="btn btn-small" id="quickAddBtn" type="button">Add</button>
+      </div>
+
+      <ul class="cart-list" id="cartList">
+        <li class="cart-empty" id="cartEmpty">No items yet — add something above.</li>
+      </ul>
+
+      <div class="cart-total-row">
+        <span>Total</span>
+        <strong id="cartTotal">Rs. 0</strong>
+      </div>
+
+      <form id="orderForm" class="order-form">
+        <div class="form-row">
+          <label>Your name <input type="text" id="custName" required placeholder="e.g. Sita Sharma"></label>
+          <label>Phone <input type="tel" id="custPhone" required placeholder="98XXXXXXXX"></label>
+        </div>
+        <label class="form-row-single">Delivery address <input type="text" id="custAddress" required placeholder="Ward, area, Kathmandu / Bhaktapur / Lalitpur"></label>
+
+        <button type="button" class="btn btn-ghost btn-small locate-btn" id="locateBtn">
+          📍 Use my current location
+        </button>
+        <p class="locate-status" id="locateStatus"></p>
+        <div id="locationMap" class="location-map"></div>
+        <input type="hidden" id="custLat">
+        <input type="hidden" id="custLng">
+
+        <label class="form-row-single">Preferred time
+          <select id="custTime">
+            <option>Morning (5–8 AM)</option>
+            <option>Afternoon (12–2 PM)</option>
+            <option>Evening (5–7 PM)</option>
+          </select>
+        </label>
+        <button class="btn btn-primary btn-block" type="submit" id="sendOrderBtn">
+          Place Order
+        </button>
+        <p class="form-note" id="formNote">Add at least one item to enable sending.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ORDER HISTORY ================= -->
+<section class="order-history" id="orderHistory">
+  <div class="wrap">
+    <p class="eyebrow">Saved on this device</p>
+    <h2>My orders</h2>
+    <p class="section-sub">Every order you place is saved here too, newest first — handy to check what you ordered last.</p>
+    <div class="order-history-list" id="orderHistoryList">
+      <p class="order-history-empty" id="orderHistoryEmpty">No orders placed yet.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="reviews">
+  <div class="wrap">
+    <p class="eyebrow">From the valley</p>
+    <h2>What regulars say</h2>
+    <div class="review-track" id="reviewTrack"><!-- injected by script.js --></div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="faq" id="faq">
+  <div class="wrap faq-inner">
+    <div>
+      <p class="eyebrow">Before you ask</p>
+      <h2>Good questions, answered plainly</h2>
+      <p class="section-sub">Still unsure? <a href="https://wa.me/9779815750117" target="_blank" rel="noopener">Message us on WhatsApp</a> — a real person answers.</p>
+    </div>
+    <div class="faq-list" id="faqList"><!-- injected by script.js --></div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact">
+  <div class="wrap contact-inner">
+    <div class="contact-card">
+      <h2>Reach the route</h2>
+      <ul class="contact-list">
+        <li><span>📍</span><div><strong>Main office</strong><br>Kathmandu, Nepal</div></li>
+        <li><span>⏰</span><div><strong>Hours</strong><br>Daily, 4:00 AM – 8:00 PM</div></li>
+        <li><span>📞</span><div><strong>Phone / WhatsApp</strong><br><a href="tel:+9779815750117">+977 9815750117</a></div></li>
+        <li><span>✉️</span><div><strong>Email</strong><br><a href="mailto:krishnadudhdairy@gmail.com">krishnadudhdairy@gmail.com</a></div></li>
+      </ul>
+      <a class="btn btn-whatsapp" href="https://wa.me/9779815750117" target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </div>
+    <div class="contact-map">
+      <iframe title="Service area map" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d56516.27776036425!2d85.2911773!3d27.6743752!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19dfbcf7a007%3A0xa20a7a90e4a61e7!2sBhaktapur%2C%20Nepal!5e0!3m2!1sen!2snp!4v1700000000000" width="100%" height="100%" style="border:0" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <span class="brand-text light">Krishna<br><small>Dudh Dairy</small></span>
+      <p>Farm to doorstep across Kathmandu Valley, every single morning since 2018.</p>
+    </div>
+    <div>
+      <h4>Quick links</h4>
+      <a href="#route">Our Mornings</a><a href="#products">Products</a><a href="#prices">Prices</a><a href="#order">Order</a>
+    </div>
+    <div>
+      <h4>Service area</h4>
+      <span>Kathmandu · Bhaktapur · Lalitpur</span>
+    </div>
+  </div>
+  <p class="footer-bottom">© <span id="year"></span> Krishna Dudh Dairy. All rights reserved.</p>
+</footer>
+
+<!-- floating helpers -->
+<a href="https://wa.me/9779815750117" class="fab fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5l.4-.4c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 2 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+</a>
+<button class="fab fab-top" id="toTop" aria-label="Back to top">↑</button>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
